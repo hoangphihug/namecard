@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Hoàng Phi Hùng
+ORG:TechVN
+TEL;TYPE=CELL:+84912345678
+EMAIL:hung@example.com
+URL:https://github.com/hoangphihung
+NOTE:Tôi là lập trình viên đam mê xây dựng giải pháp công nghệ cho doanh nghiệp.
+END:VCARD
