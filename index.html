@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -267,18 +266,25 @@
               // Tạo vCard khi bấm nút
               document.getElementById("addContact").onclick = function (e) {
                 e.preventDefault();
-                // Lấy slug hiện tại
-                const slug = getSlug();
-                // Tạo đường dẫn tới file vcf
-                const vcfUrl = `vcard/${slug}.vcf`;
+                // Tạo nội dung vCard
+                const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:${user.name}
+ORG=Công ty cổ phần thép Nam Kim
+TITLE:${user.role}
+TEL;TYPE=CELL:${user.phone}
+EMAIL:${user.email}
+END:VCARD`;
+                // Tạo data URI
+                const vcardData = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcard);
                 // Tạo link tải
                 const link = document.createElement("a");
-                link.href = vcfUrl;
+                link.href = vcardData;
                 link.download = `${user.name}.vcf`;
                 document.body.appendChild(link);
                 link.click();
                 setTimeout(() => {
-                  showToast("Lưu thành công!");
+                  showToast("Đã lưu!");
                   document.body.removeChild(link);
                 }, 500);
               };
