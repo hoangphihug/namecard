@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -31,7 +32,7 @@
         padding: 40px 20px 50px;
         color: white;
         position: relative;
-        height: 240px; /* Thêm chiều cao cho header */
+        height: 150px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -129,6 +130,29 @@
         text-decoration: underline;
       }
 
+      .toast {
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4f46e5;
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 30px;
+        font-size: 1rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s, bottom 0.4s;
+        z-index: 9999;
+      }
+
+      .toast.show {
+        opacity: 1;
+        bottom: 64px;
+        pointer-events: auto;
+      }
+
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -145,114 +169,139 @@
     <div class="card" id="card">
       <!-- Nội dung sẽ được render bằng JS -->
     </div>
+    <div class="toast" id="toast"></div>
     <script>
-      // Danh sách user
-      const USERS = {
-        "hoang-phi-hung": {
-          name: "Hoàng Phi Hùng",
-          role: "Nhân viên IT",
-          avatar: "images/hoang-phi-hung.jpg",
-          email: "hung@example.com",
-          phone: "0123456789",
-          social: "https://example.com/hoangphihung",
-          socialText: "",
-          company: "TechVN",
-          zalo: "https://zalo.me/0388184606", // Thêm link Zalo cá nhân
-        },
-        "pham-trung-vinh": {
-          name: "Phạm Trung Vĩnh",
-          role: "Thiết kế đồ họa",
-          avatar: "images/pham-trung-vinh.jpg",
-          email: "a@example.com",
-          phone: "0987654321",
-          social: "https://facebook.com/nguyenvana",
-          socialText: "facebook.com/nguyenvana",
-          company: "DesignPro",
-        },
-        // Thêm user khác tại đây
-      };
-
-      // Lấy slug từ URL (dạng ?u=slug hoặc /slug)
-      function getSlug() {
-        const url = new URL(window.location.href);
-        // Ưu tiên lấy từ query string ?u=slug
-        if (url.searchParams.get("u")) return url.searchParams.get("u");
-        // Nếu truy cập dạng /index.html/slug
-        const pathArr = url.pathname.split("/");
-        // Tìm slug ở cuối path (bỏ qua .html)
-        let slug = pathArr[pathArr.length - 1];
-        // Nếu là index.html hoặc rỗng thì trả về chuỗi rỗng
-        if (slug.endsWith(".html") || slug === "") {
-          return "";
-        }
-        return slug;
-      }
-
-      // Render user theo slug
-      function renderUser(user) {
-        document.getElementById("card").innerHTML = `
-          <div class="header">
-            <a href="https://tonnamkim.com/" target="_blank" class="logo-link">
-              <img src="images/logo.png" alt="Logo" class="logo-img" />
-            </a>
-            <img src="${user.avatar}" alt="Avatar" class="avatar" />
-            <div class="name">${user.name}</div>
-            <div class="role">${user.role}</div>
-            <a href="#" class="btn" id="addContact">+ Thêm liên hệ</a>
-          </div>
-          <div class="info">
-            <div class="info-item">
-              <strong>Email</strong>
-              <a href="mailto:${user.email}">${user.email}</a>
-            </div>
-            <div class="info-item">
-              <strong>Phone</strong>
-              <a href="tel:${user.phone}">${user.phone}</a>
-            </div>
-            <div class="info-item">
-              <strong>Công ty</strong>
-              ${user.company}
-            </div>
-            <div class="info-item">
-              <strong>Social</strong>
-              <a href="${user.social}" target="_blank">${user.socialText}</a>
-              ${
-                user.zalo
-                  ? `<a href="${user.zalo}" target="_blank" style="margin-left:12px;">
-                      <img src="images/zalo-icon.png" alt="Zalo" style="width:24px;height:24px;vertical-align:middle;" />
-                    </a>`
-                  : ""
+            // Danh sách user
+            const USERS = {
+              "hoang-phi-hung": {
+                name: "Hoàng Phi Hùng",
+                role: "Nhân viên IT",
+                avatar: "images/hoang-phi-hung.jpg",
+                email: "hung@example.com",
+                phone: "0123456789",
+                social: "https://example.com/hoangphihung",
+                socialText: "",
+                zalo: "https://zalo.me/0388184606",
+                about: "Tôi là một nhân viên IT yêu thích công nghệ, luôn sẵn sàng học hỏi và chia sẻ kiến thức."
+              },
+              "pham-trung-vinh": {
+                name: "Phạm Trung Vĩnh",
+                role: "Thiết kế đồ họa",
+                avatar: "images/pham-trung-vinh.jpg",
+                email: "a@example.com",
+                phone: "0987654321",
+                social: "https://example.com/hoangphihung",
+                socialText: "",
+                zalo: "https://zalo.me/0388184606",
+                about: "Tôi là một designer sáng tạo, chuyên thiết kế nhận diện thương hiệu và sản phẩm số."
+              },
+              "nguyen-van-a": {
+                name: "Nguyễn Văn A",
+                role: "Lập trình viên",
+                avatar: "images/nguyen-van-a.jpg",
+                email: "nguyenvana@gmail.com",
+                phone: "0123456789",
+                social: "https://example.com/hoangphihung",
+                socialText: "",
+                zalo: "https://zalo.me/0388184606",
+                about: "Lập trình viên với kinh nghiệm 5 năm trong lĩnh vực phát triển phần mềm."
               }
-            </div>
-          </div>
-        `;
-        // Tạo vCard khi bấm nút
-        document.getElementById("addContact").onclick = function (e) {
-          e.preventDefault();
-          const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:${user.name}
-ORG:${user.company}
-TITLE:${user.role}
-TEL;TYPE=CELL:${user.phone}
-EMAIL:${user.email}
-END:VCARD`;
-          const blob = new Blob([vcard], { type: "text/vcard" });
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = `${user.name}.vcf`;
-          link.click();
-        };
-      }
+            };
 
-      // Khởi tạo
-      const slug = getSlug();
-      if (slug && USERS[slug]) {
-        renderUser(USERS[slug]);
-      } else {
-        document.getElementById("card").innerHTML =
-          "<div style='padding:40px;text-align:center'>Không tìm thấy user!</div>";
-      }
+            // Lấy slug từ URL (dạng ?u=slug hoặc /slug)
+            function getSlug() {
+              const url = new URL(window.location.href);
+              // Ưu tiên lấy từ query string ?u=slug
+              if (url.searchParams.get("u")) return url.searchParams.get("u");
+              // Nếu truy cập dạng /index.html/slug
+              const pathArr = url.pathname.split("/");
+              // Tìm slug ở cuối path (bỏ qua .html)
+              let slug = pathArr[pathArr.length - 1];
+              // Nếu là index.html hoặc rỗng thì trả về chuỗi rỗng
+              if (slug.endsWith(".html") || slug === "") {
+                return "";
+              }
+              return slug;
+            }
+
+            // Render user theo slug
+            function renderUser(user) {
+              document.getElementById("card").innerHTML = `
+                <div class="header">
+                  <a href="https://tonnamkim.com/" target="_blank" class="logo-link">
+                    <img src="images/logo.png" alt="Logo" class="logo-img" />
+                  </a>
+                  <img src="${user.avatar}" alt="Avatar" class="avatar" />
+                  <div class="name">${user.name}</div>
+                  <div class="role">${user.role}</div>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <strong>Giới thiệu</strong>
+                    <div>${user.about || "Chưa có thông tin giới thiệu."}</div>
+                  </div>
+                  <div class="info-item">
+                    <strong>Email</strong>
+                    <a href="mailto:${user.email}">${user.email}</a>
+                  </div>
+                  <div class="info-item">
+                    <strong>Phone</strong>
+                    <a href="tel:${user.phone}">${user.phone}</a>
+                  </div>
+                  <div class="info-item">
+                    <strong>Social</strong>
+                    <a href="${user.social}" target="_blank">${user.socialText}</a>
+                    ${
+                      user.zalo
+                        ? `<a href="${user.zalo}" target="_blank" style="margin-left:12px;">
+                            <img src="images/zalo-icon.png" alt="Zalo" style="width:24px;height:24px;vertical-align:middle;" />
+                          </a>`
+                        : ""
+                    }
+                  </div>
+                  <div style="text-align:center; margin-top:24px;">
+                    <a href="#" class="btn" id="addContact">Lưu liên hệ</a>
+                  </div>
+                </div>
+              `;
+              // Tạo vCard khi bấm nút
+              document.getElementById("addContact").onclick = function (e) {
+                e.preventDefault();
+                // Lấy slug hiện tại
+                const slug = getSlug();
+                // Tạo đường dẫn tới file vcf
+                const vcfUrl = `vcard/${slug}.vcf`;
+                // Tạo link tải
+                const link = document.createElement("a");
+                link.href = vcfUrl;
+                link.download = `${user.name}.vcf`;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                  showToast("Lưu thành công!");
+                  document.body.removeChild(link);
+                }, 500);
+              };
+            }
+
+            // Hiện thông báo
+            function showToast(message) {
+              const toast = document.getElementById("toast");
+              toast.textContent = message;
+              toast.classList.add("show");
+              setTimeout(() => {
+                toast.classList.remove("show");
+              }, 2200);
+            }
+
+            // Khởi tạo
+            const slug = getSlug();
+            if (slug && USERS[slug]) {
+              renderUser(USERS[slug]);
+            } else {
+              document.getElementById("card").innerHTML =
+                "<div style='padding:40px;text-align:center'>Không tìm thấy user!</div>";
+            }
     </script>
   </body>
 </html>
