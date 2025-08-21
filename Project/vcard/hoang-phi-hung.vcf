@@ -1,0 +1,8 @@
+BEGIN:VCARD
+      VERSION:3.0
+      FN:Hoàng Phi Hùng
+      ORG:Công ty cổ phần thép Nam Kim
+      TITLE:Nhân viên IT
+      TEL;TYPE=CELL:0123456789
+      EMAIL:hung@example.com
+      END:VCARD
